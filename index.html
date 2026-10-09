@@ -1,0 +1,941 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asesmen Sumatif Biologi XII - Golongan Darah ABO</title>
+    <style>
+        :root {
+            --primary: #1e40af;
+            --primary-dark: #1e3a8a;
+            --accent: #3b82f6;
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --border: #e2e8f0;
+            --success: #16a34a;
+            --warning: #d97706;
+            --danger: #dc2626;
+            --radius: 12px;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.5;
+            padding: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 680px;
+            background-color: var(--bg-card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* HEADER & TIMER */
+        .app-header {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            color: #ffffff;
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .app-title-sm {
+            font-size: 0.9rem;
+            font-weight: 600;
+            opacity: 0.9;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .timer-box {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(4px);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 1.05rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            letter-spacing: 1px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .timer-box.warning {
+            background: var(--danger);
+            animation: pulse 1s infinite alternate;
+        }
+
+        @keyframes pulse {
+            from { opacity: 1; }
+            to { opacity: 0.75; }
+        }
+
+        .screen {
+            padding: 20px;
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        /* SCREEN 1: IDENTITAS */
+        .welcome-card {
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        .welcome-card h1 {
+            font-size: 1.4rem;
+            color: var(--primary);
+            margin-bottom: 6px;
+        }
+
+        .welcome-card h2 {
+            font-size: 1rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-bottom: 20px;
+        }
+
+        .info-box {
+            background-color: #eff6ff;
+            border-left: 4px solid var(--accent);
+            padding: 12px 16px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            text-align: left;
+            margin-bottom: 20px;
+            color: #1e40af;
+        }
+
+        .form-group {
+            text-align: left;
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 6px;
+            color: var(--text-main);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--primary);
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:active {
+            transform: scale(0.99);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background-color: #e2e8f0;
+            color: var(--text-main);
+        }
+
+        .btn-secondary:hover {
+            background-color: #cbd5e1;
+        }
+
+        .btn-success {
+            background-color: var(--success);
+        }
+
+        .btn-success:hover {
+            background-color: #15803d;
+        }
+
+        /* SCREEN 2: ASESMEN */
+        .nav-tabs {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 16px;
+            justify-content: space-between;
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 10px 4px;
+            background: #f1f5f9;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .nav-tab.active {
+            background: var(--primary);
+            color: #ffffff;
+            border-color: var(--primary);
+        }
+
+        .nav-tab.answered {
+            border-bottom: 3px solid var(--success);
+        }
+
+        .question-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            font-size: 0.85rem;
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+        }
+
+        .badge-solo {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-score {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+
+        .question-text {
+            font-size: 1.05rem;
+            font-weight: 600;
+            margin-bottom: 14px;
+            color: var(--text-main);
+            line-height: 1.4;
+        }
+
+        /* TOOLBAR SIMBOL GENETIKA */
+        .symbol-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            background-color: #f1f5f9;
+            padding: 8px 10px;
+            border-radius: 8px 8px 0 0;
+            border: 1px solid var(--border);
+            border-bottom: none;
+            align-items: center;
+        }
+
+        .symbol-toolbar-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-right: 4px;
+            width: 100%;
+            margin-bottom: 2px;
+        }
+
+        .btn-symbol {
+            padding: 6px 10px;
+            background-color: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            cursor: pointer;
+            transition: all 0.15s;
+            user-select: none;
+        }
+
+        .btn-symbol:active {
+            background-color: #dbeafe;
+            transform: scale(0.95);
+        }
+
+        .answer-textarea {
+            width: 100%;
+            min-height: 140px;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 0 0 8px 8px;
+            font-size: 1rem;
+            line-height: 1.5;
+            resize: vertical;
+            outline: none;
+            margin-bottom: 16px;
+        }
+
+        .answer-textarea:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* SCREEN 3: HASIL */
+        .result-header {
+            text-align: center;
+            padding: 10px 0 20px 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 16px;
+        }
+
+        .result-score-badge {
+            display: inline-block;
+            padding: 16px 28px;
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
+            color: #ffffff;
+            border-radius: 50px;
+            margin: 12px 0;
+            box-shadow: 0 4px 14px rgba(30, 64, 175, 0.3);
+        }
+
+        .score-val {
+            font-size: 2.5rem;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .score-max {
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+
+        .category-tag {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-top: 6px;
+        }
+
+        .recap-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-size: 0.9rem;
+        }
+
+        .recap-table th, .recap-table td {
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            text-align: left;
+        }
+
+        .recap-table th {
+            background-color: #f1f5f9;
+            font-weight: 700;
+        }
+
+        .feedback-card {
+            background-color: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 14px;
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        /* MODAL KONFIRMASI */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+            z-index: 100;
+        }
+
+        .modal-card {
+            background: #ffffff;
+            border-radius: var(--radius);
+            padding: 24px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .modal-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .modal-body {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        @media (max-width: 480px) {
+            body { padding: 4px; }
+            .screen { padding: 14px; }
+            .btn-symbol { padding: 5px 8px; font-size: 0.85rem; }
+            .question-text { font-size: 0.98rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <!-- HEADER & TIMER -->
+    <div class="app-header">
+        <div>
+            <div class="app-title-sm">Asesmen Sumatif Biologi</div>
+            <div style="font-size: 0.75rem; opacity: 0.8;">Hereditas - Golongan Darah ABO</div>
+        </div>
+        <div class="timer-box" id="timerBox">
+            ⏱️ <span id="timerDisplay">10:00</span>
+        </div>
+    </div>
+
+    <!-- SCREEN 1: IDENTITAS PESERTA DIDIK -->
+    <div class="screen active" id="screen1">
+        <div class="welcome-card">
+            <h1>ASESMEN AKHIR SUMATIF BIOLOGI XII</h1>
+            <h2>Hereditas Manusia – Golongan Darah Sistem ABO</h2>
+        </div>
+
+        <div class="info-box">
+            <strong>📌 Petunjuk Pengerjaan:</strong><br>
+            • Kerjakan secara mandiri dan jujur.<br>
+            • Bacalah setiap soal uraian dengan teliti.<br>
+            • Tuliskan jawaban dan alasan ilmiah secara lengkap.<br>
+            • Gunakan tombol bantuan simbol genetika untuk mengetik alel.<br>
+            • Waktu pengerjaan total: <strong>10 menit</strong>.
+        </div>
+
+        <form id="identityForm" onsubmit="startAssessment(event)">
+            <div class="form-group">
+                <label for="studentName">Nama Lengkap:</label>
+                <input type="text" id="studentName" placeholder="Masukkan nama lengkap Anda" required autocomplete="off">
+            </div>
+            <div class="form-group">
+                <label for="studentClass">Kelas / Fase:</label>
+                <input type="text" id="studentClass" placeholder="Contoh: XII F-1" required autocomplete="off">
+            </div>
+            <button type="submit" class="btn btn-primary" style="margin-top: 10px;">
+                🚀 MULAI ASESMEN
+            </button>
+        </form>
+    </div>
+
+    <!-- SCREEN 2: HALAMAN ASESMEN -->
+    <div class="screen" id="screen2">
+        <!-- NAVIGATION TABS -->
+        <div class="nav-tabs">
+            <button class="nav-tab active" id="tab0" onclick="goToQuestion(0)">Soal 1</button>
+            <button class="nav-tab" id="tab1" onclick="goToQuestion(1)">Soal 2</button>
+            <button class="nav-tab" id="tab2" onclick="goToQuestion(2)">Soal 3</button>
+            <button class="nav-tab" id="tab3" onclick="goToQuestion(3)">Soal 4</button>
+            <button class="nav-tab" id="tab4" onclick="goToQuestion(4)">Soal 5</button>
+        </div>
+
+        <!-- QUESTION METADATA -->
+        <div class="question-meta">
+            <span class="badge badge-solo" id="soloBadge">Level SOLO: Multistructural</span>
+            <span class="badge badge-score" id="scoreBadge">Bobot: 10 Poin</span>
+        </div>
+
+        <!-- QUESTION TEXT -->
+        <div class="question-text" id="questionText">
+            Loading pertanyaan...
+        </div>
+
+        <!-- SYMBOL TOOLBAR FOR EASY TYPING -->
+        <div class="symbol-toolbar">
+            <span class="symbol-toolbar-label">💡 Bantuan Ketik Simbol Genetika (Klik):</span>
+            <button type="button" class="btn-symbol" onclick="insertSymbol('Iᴬ')">Iᴬ</button>
+            <button type="button" class="btn-symbol" onclick="insertSymbol('Iᴮ')">Iᴮ</button>
+            <button type="button" class="btn-symbol" onclick="insertSymbol('i')">i</button>
+
+            <button type="button" class="btn-symbol" onclick="insertSymbol('IᴬIᴬ')">IᴬIᴬ</button>
+            <button type="button" class="btn-symbol" onclick="insertSymbol('Iᴬi')">Iᴬi</button>
+            <button type="button" class="btn-symbol" onclick="insertSymbol('IᴮIᴮ')">IᴮIᴮ</button>
+            <button type="button" class="btn-symbol" onclick="insertSymbol('Iᴮi')">Iᴮi</button>
+            <button type="button" class="btn-symbol" onclick="insertSymbol('IᴬIᴮ')">IᴬIᴮ</button>
+            <button type="button" class="btn-symbol" onclick="insertSymbol('ii')">ii</button>
+            <button type="button" class="btn-symbol" onclick="insertSymbol('×')">×</button>
+            <button type="button" class="btn-symbol" onclick="insertSymbol('%')">%</button>
+        </div>
+
+        <!-- ANSWER AREA -->
+        <textarea id="answerInput" class="answer-textarea" placeholder="Tuliskan jawaban ilmiah Anda di sini..." oninput="saveCurrentAnswer()"></textarea>
+
+        <!-- NAVIGATION BUTTONS -->
+        <div class="nav-buttons">
+            <button type="button" class="btn btn-secondary" id="btnPrev" onclick="prevQuestion()" style="flex:1;">
+                ⬅️ Sebelumnya
+            </button>
+            <button type="button" class="btn btn-primary" id="btnNext" onclick="nextQuestion()" style="flex:1;">
+                Berikutnya ➡️
+            </button>
+            <button type="button" class="btn btn-success" id="btnSubmit" onclick="showSubmitConfirm()" style="flex:1; display:none;">
+                📥 KUMPULKAN
+            </button>
+        </div>
+    </div>
+
+    <!-- SCREEN 3: HASIL AKHIR -->
+    <div class="screen" id="screen3">
+        <div class="result-header">
+            <h2 style="color: var(--primary); font-size: 1.4rem;">ASESMEN SELESAI</h2>
+            <div id="studentInfoSummary" style="font-size: 0.95rem; color: var(--text-muted); margin-top: 4px;">
+                Nama: - | Kelas: -
+            </div>
+
+            <div class="result-score-badge">
+                <div class="score-val" id="finalScoreVal">0</div>
+                <div class="score-max">dari 100 Poin</div>
+            </div>
+
+            <div class="category-tag" id="categoryTag">Kategori: -</div>
+        </div>
+
+        <div style="font-size: 0.9rem; font-weight: 700; margin-bottom: 8px; color: var(--text-main);">
+            📊 Rekapitulasi Perolehan Skor:
+        </div>
+
+        <table class="recap-table">
+            <thead>
+                <tr>
+                    <th>No. Soal</th>
+                    <th>Level SOLO</th>
+                    <th>Skor Maks</th>
+                    <th>Skor Perolehan</th>
+                </tr>
+            </thead>
+            <tbody id="recapTableBody">
+                <!-- Rows injected dynamically -->
+            </tbody>
+        </table>
+
+        <div style="font-size: 0.9rem; font-weight: 700; margin-bottom: 6px; color: var(--text-main);">
+            💡 Umpan Balik & Catatan Evaluasi:
+        </div>
+        <div class="feedback-card" id="feedbackText">
+            -
+        </div>
+
+        <div style="text-align: center; font-size: 0.8rem; color: var(--text-muted); margin-top: 10px;">
+            Waktu Pengerjaan: <span id="timeSpentVal">00:00</span>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL KONFIRMASI PENGUMPULAN -->
+<div class="modal-overlay" id="confirmModal">
+    <div class="modal-card">
+        <div class="modal-title">Konfirmasi Pengumpulan</div>
+        <div class="modal-body">
+            Apakah Anda yakin ingin mengumpulkan seluruh jawaban Anda sekarang?
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-secondary" onclick="closeSubmitConfirm()">Periksa Lagi</button>
+            <button class="btn btn-success" onclick="finishAssessment()">Ya, Kumpulkan</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // DATA SOAL (PERSIS DARI LAMPIRAN 3)
+    const questionsData = [
+        {
+            id: 1,
+            solo: "Multistructural",
+            weight: 10,
+            question: "Tuliskan seluruh kemungkinan genotipe untuk seseorang yang berfenotipe golongan darah A dan golongan darah B!"
+        },
+        {
+            id: 2,
+            solo: "Multistructural",
+            weight: 10,
+            question: "Tuliskan genotipe dan jenis antigen pada permukaan eritrosit untuk seseorang bergolongan darah AB dan golongan darah O!"
+        },
+        {
+            id: 3,
+            solo: "Relational",
+            weight: 20,
+            question: "Seorang ibu bergolongan darah A melahirkan anak bergolongan darah O. Jelaskan genotipe pasti ibu tersebut dan sebutkan syarat genotipe ayah!"
+        },
+        {
+            id: 4,
+            solo: "Relational",
+            weight: 30,
+            question: "Pasangan suami istri, yang suami bergolongan darah A heterozigot (Iᴬi) dan istri bergolongan darah B heterozigot (Iᴮi), merencanakan memiliki anak. Hitunglah persentase kemungkinan anak mereka bergolongan darah AB dan O!"
+        },
+        {
+            id: 5,
+            solo: "Extended Abstract",
+            weight: 30,
+            question: "Seorang anak bergolongan darah AB (IᴬIᴮ). Jika ayahnya bergolongan darah O (ii), analisislah apakah kasus ini wajar menurut Hukum Mendel standar! Jelaskan argumentasimu dan sebutkan kemungkinan penjelasan lain!"
+        }
+    ];
+
+    // APP STATE
+    let currentQuestionIndex = 0;
+    let userAnswers = ["", "", "", "", ""];
+    let studentData = { name: "", class: "" };
+    let timerSeconds = 600; // 10 menit
+    let timerInterval = null;
+    let isFinished = false;
+
+    // START ASSESSMENT
+    function startAssessment(e) {
+        e.preventDefault();
+        const nameInput = document.getElementById("studentName").value.trim();
+        const classInput = document.getElementById("studentClass").value.trim();
+
+        if (!nameInput || !classInput) return;
+
+        studentData.name = nameInput;
+        studentData.class = classInput;
+
+        document.getElementById("screen1").classList.remove("active");
+        document.getElementById("screen2").classList.add("active");
+
+        loadQuestion(0);
+        startTimer();
+    }
+
+    // TIMER LOGIC
+    function startTimer() {
+        updateTimerDisplay();
+        timerInterval = setInterval(() => {
+            timerSeconds--;
+            updateTimerDisplay();
+
+            if (timerSeconds <= 60) {
+                document.getElementById("timerBox").classList.add("warning");
+            }
+
+            if (timerSeconds <= 0) {
+                clearInterval(timerInterval);
+                alert("⏰ Waktu 10 menit telah habis! Jawaban Anda akan otomatis dikumpulkan.");
+                finishAssessment();
+            }
+        }, 1000);
+    }
+
+    function updateTimerDisplay() {
+        const mins = Math.floor(timerSeconds / 60);
+        const secs = timerSeconds % 60;
+        document.getElementById("timerDisplay").textContent = 
+            `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    // LOAD QUESTION TO UI
+    function loadQuestion(index) {
+        currentQuestionIndex = index;
+        const q = questionsData[index];
+
+        document.getElementById("soloBadge").textContent = `Level SOLO: ${q.solo}`;
+        document.getElementById("scoreBadge").textContent = `Bobot: ${q.weight} Poin`;
+        document.getElementById("questionText").textContent = `Soal ${q.id}. ${q.question}`;
+        document.getElementById("answerInput").value = userAnswers[index];
+
+        // Update tabs
+        for (let i = 0; i < 5; i++) {
+            const tab = document.getElementById(`tab${i}`);
+            tab.classList.remove("active");
+            if (i === index) tab.classList.add("active");
+
+            if (userAnswers[i].trim().length > 0) {
+                tab.classList.add("answered");
+            } else {
+                tab.classList.remove("answered");
+            }
+        }
+
+        // Update Nav buttons
+        document.getElementById("btnPrev").style.visibility = (index === 0) ? "hidden" : "visible";
+
+        if (index === 4) {
+            document.getElementById("btnNext").style.display = "none";
+            document.getElementById("btnSubmit").style.display = "inline-flex";
+        } else {
+            document.getElementById("btnNext").style.display = "inline-flex";
+            document.getElementById("btnSubmit").style.display = "none";
+        }
+    }
+
+    function saveCurrentAnswer() {
+        const val = document.getElementById("answerInput").value;
+        userAnswers[currentQuestionIndex] = val;
+
+        const tab = document.getElementById(`tab${currentQuestionIndex}`);
+        if (val.trim().length > 0) {
+            tab.classList.add("answered");
+        } else {
+            tab.classList.remove("answered");
+        }
+    }
+
+    function goToQuestion(index) {
+        saveCurrentAnswer();
+        loadQuestion(index);
+    }
+
+    function nextQuestion() {
+        if (currentQuestionIndex < 4) {
+            saveCurrentAnswer();
+            loadQuestion(currentQuestionIndex + 1);
+        }
+    }
+
+    function prevQuestion() {
+        if (currentQuestionIndex > 0) {
+            saveCurrentAnswer();
+            loadQuestion(currentQuestionIndex - 1);
+        }
+    }
+
+    function insertSymbol(symbol) {
+        const textarea = document.getElementById("answerInput");
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const text = textarea.value;
+
+        textarea.value = text.substring(0, start) + symbol + text.substring(end);
+        textarea.selectionStart = textarea.selectionEnd = start + symbol.length;
+        textarea.focus();
+        saveCurrentAnswer();
+    }
+
+    // MODAL CONTROL
+    function showSubmitConfirm() {
+        saveCurrentAnswer();
+        document.getElementById("confirmModal").style.display = "flex";
+    }
+
+    function closeSubmitConfirm() {
+        document.getElementById("confirmModal").style.display = "none";
+    }
+
+    // AUTOMATIC EVALUATION ENGINE BASED ON LAMPIRAN 3
+    function evaluateAnswers() {
+        let scores = [0, 0, 0, 0, 0];
+
+        // Normalize text function
+        const norm = (str) => {
+            return (str || "").toLowerCase()
+                .replace(/iᵃ/g, "ia")
+                .replace(/iᵇ/g, "ib")
+                .replace(/i\^a/g, "ia")
+                .replace(/i\^b/g, "ib")
+                .replace(/iª/g, "ia")
+                .replace(/iº/g, "io");
+        };
+
+        // SOAL 1 (Max 10)
+        // Key: A -> IAIA, IAi; B -> IBIB, IBi
+        const a1 = norm(userAnswers[0]);
+        let s1 = 0;
+        const hasA_homo = a1.includes("iaia");
+        const hasA_hete = a1.includes("iai");
+        const hasB_homo = a1.includes("ibib");
+        const hasB_hete = a1.includes("ibi");
+
+        if (hasA_homo && hasA_hete) s1 += 5;
+        else if (hasA_homo || hasA_hete) s1 += 2.5;
+
+        if (hasB_homo && hasB_hete) s1 += 5;
+        else if (hasB_homo || hasB_hete) s1 += 2.5;
+        scores[0] = s1;
+
+        // SOAL 2 (Max 10)
+        // Key: AB -> IAIB (kodominan), antigen A & B; O -> ii (homozigot resesif), tanpa/tidak ada antigen
+        const a2 = norm(userAnswers[1]);
+        let s2 = 0;
+        if (a2.includes("iaib")) s2 += 2.5;
+        if (a2.includes("antigen a") && a2.includes("antigen b")) s2 += 2.5;
+        if (a2.includes("ii")) s2 += 2.5;
+        if (a2.includes("tidak") || a2.includes("tanpa") || a2.includes("tidak memiliki") || a2.includes("tidak ada")) {
+            if (a2.includes("antigen")) s2 += 2.5;
+        }
+        scores[1] = s2;
+
+        // SOAL 3 (Max 20)
+        // Key: Ibu pasti IAi (10 poin); Ayah harus punya alel i (IAi, IBi, atau ii) (10 poin)
+        const a3 = norm(userAnswers[2]);
+        let s3 = 0;
+        if (a3.includes("iai") || (a3.includes("ibu") && a3.includes("heterozigot"))) {
+            s3 += 10;
+        }
+        if (a3.includes("iai") || a3.includes("ibi") || a3.includes("ii") || a3.includes("alel i") || a3.includes("membawa i")) {
+            s3 += 10;
+        }
+        scores[2] = s3;
+
+        // SOAL 4 (Max 30)
+        // Key: Persilangan IAi x IBi -> Peluang AB = 25%, O = 25%
+        const a4 = norm(userAnswers[3]);
+        let s4 = 0;
+        const hasAB25 = a4.includes("25") || a4.includes("1/4") || a4.includes("25%");
+        const hasO25 = a4.includes("25") || a4.includes("1/4") || a4.includes("25%");
+        const hasCross = a4.includes("iaib") && a4.includes("iai") && a4.includes("ibi") && a4.includes("ii");
+
+        if (hasAB25) s4 += 10;
+        if (hasO25) s4 += 10;
+        if (hasCross || a4.includes("persilangan") || a4.includes("punnett")) s4 += 10;
+        scores[3] = s4;
+
+        // SOAL 5 (Max 30)
+        // Key: Tidak mungkin/wajar menurut Mendel standar (20 poin: ayah ii hanya beri i, anak IAIB tak mungkin punya alel i dari ii); Penjelasan lain: Bombay / biologis (10 poin)
+        const a5 = norm(userAnswers[4]);
+        let s5 = 0;
+        if (a5.includes("tidak") || a5.includes("bukan") || a5.includes("mustahil") || a5.includes("tidak wajar") || a5.includes("tidak mungkin")) {
+            s5 += 10;
+        }
+        if (a5.includes("alel i") || a5.includes("ii") || a5.includes("hanya mewariskan") || a5.includes("iaib")) {
+            s5 += 10;
+        }
+        if (a5.includes("bombay") || a5.includes("biologis") || a5.includes("adopsi") || a5.includes("mutasi") || a5.includes("pemeriksaan")) {
+            s5 += 10;
+        }
+        scores[4] = s5;
+
+        return scores;
+    }
+
+    // FINISH ASSESSMENT
+    function finishAssessment() {
+        if (isFinished) return;
+        isFinished = true;
+
+        clearInterval(timerInterval);
+        closeSubmitConfirm();
+
+        const timeUsedSecs = 600 - timerSeconds;
+        const mins = Math.floor(timeUsedSecs / 60);
+        const secs = timeUsedSecs % 60;
+        const timeSpentStr = `${mins} menit ${secs} detik`;
+
+        const scores = evaluateAnswers();
+        const totalScore = scores.reduce((a, b) => a + b, 0);
+
+        // UI Updates for Screen 3
+        document.getElementById("studentInfoSummary").textContent = 
+            `Nama: ${studentData.name} | Kelas: ${studentData.class}`;
+        document.getElementById("finalScoreVal").textContent = totalScore;
+        document.getElementById("timeSpentVal").textContent = timeSpentStr;
+
+        // Category Tag & Feedback
+        let category = "";
+        let feedback = "";
+
+        if (totalScore >= 90) {
+            category = "Sangat Baik 🌟";
+            feedback = "Pemahaman konsep pewarisan golongan darah ABO dan kemampuan analisis Anda sudah sangat baik.";
+        } else if (totalScore >= 80) {
+            category = "Baik 👍";
+            feedback = "Pemahaman dasar sudah baik. Perkuat kembali analisis genotipe dan persilangan.";
+        } else if (totalScore >= 70) {
+            category = "Cukup 👌";
+            feedback = "Pemahaman dasar cukup. Perbanyak latihan analisis persilangan dan penelusuran alel resesif.";
+        } else {
+            category = "Perlu Bimbingan 📚";
+            feedback = "Pelajari kembali hubungan fenotipe–genotipe, alel Iᴬ/Iᴮ/i, dan persilangan golongan darah ABO.";
+        }
+
+        document.getElementById("categoryTag").textContent = `Kategori: ${category}`;
+        document.getElementById("feedbackText").textContent = feedback;
+
+        // Build Recap Table
+        const tbody = document.getElementById("recapTableBody");
+        tbody.innerHTML = "";
+
+        questionsData.forEach((q, idx) => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td>Soal ${q.id}</td>
+                <td><span class="badge badge-solo" style="font-size:0.7rem;">${q.solo}</span></td>
+                <td>${q.weight}</td>
+                <td style="font-weight:bold; color:var(--primary);">${scores[idx]}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        const trTotal = document.createElement("tr");
+        trTotal.style.backgroundColor = "#f1f5f9";
+        trTotal.style.fontWeight = "bold";
+        trTotal.innerHTML = `
+            <td colspan="2">TOTAL SKOR</td>
+            <td>100</td>
+            <td style="font-size:1.1rem; color:var(--primary);">${totalScore}</td>
+        `;
+        tbody.appendChild(trTotal);
+
+        document.getElementById("screen2").classList.remove("active");
+        document.getElementById("screen3").classList.add("active");
+    }
+</script>
+
+</body>
+</html>
